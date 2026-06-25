@@ -18,6 +18,9 @@ add_library(depth_cam_stream_codec_core
     src/camera/realsense_color_capture.cpp
     src/camera/realsense_color_config.cpp
     src/config/realsense_color_yaml.cpp
+    src/camera/realsense_depth_capture.cpp
+    src/camera/realsense_depth_config.cpp
+    src/config/realsense_depth_yaml.cpp
 )
 
 target_include_directories(depth_cam_stream_codec_core PUBLIC
@@ -33,6 +36,7 @@ target_link_libraries(depth_cam_stream_codec_core PUBLIC
 # ── ros2 library ─────────────────────────────────────────────────────────────
 add_library(depth_cam_stream_codec_ros2
     src/ros2/color_frame_adapter.cpp
+    src/ros2/depth_frame_adapter.cpp
 )
 
 target_link_libraries(depth_cam_stream_codec_ros2 PUBLIC
@@ -48,7 +52,10 @@ ament_target_dependencies(depth_cam_stream_codec_ros2 PUBLIC
 add_executable(te-1 test/te-1.cpp)
 target_link_libraries(te-1 PRIVATE depth_cam_stream_codec_ros2)
 
-install(TARGETS te-1
+add_executable(te-2 test/te-2.cpp)
+target_link_libraries(te-2 PRIVATE depth_cam_stream_codec_ros2)
+
+install(TARGETS te-1 te-2
     DESTINATION lib/${PROJECT_NAME}
 )
 

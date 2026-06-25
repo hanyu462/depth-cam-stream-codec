@@ -1,0 +1,11 @@
+realsense_depth:
+  width:  1280
+  height: 720
+  fps:    30
+  align_to_color: true
+
+  spatial_filter:
+    enabled:      true
+    magnitude:    2
+    smooth_alpha: 0.5
+    smooth_delta: 20.0
