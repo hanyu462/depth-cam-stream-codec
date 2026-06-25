@@ -11,11 +11,11 @@
 
 namespace depth_cam_stream_codec::camera {
 
-using ColorBuffer = common::LatestBuffer<common::ColorFrame>;
+using ColorFrameBuffer = common::LatestBuffer<common::ColorFrame>;
 
 class RealSenseColorCapture {
 public:
-    RealSenseColorCapture(std::shared_ptr<ColorBuffer> buffer,
+    RealSenseColorCapture(std::shared_ptr<ColorFrameBuffer> buffer,
                           RealsenseColorConfig         config);
     ~RealSenseColorCapture();
 
@@ -25,7 +25,7 @@ public:
 private:
     void run();
 
-    std::shared_ptr<ColorBuffer> buffer_;
+    std::shared_ptr<ColorFrameBuffer> buffer_;
     RealsenseColorConfig         config_;
     std::atomic<bool>            running_{false};
     std::thread                  worker_;

@@ -33,9 +33,6 @@ target_link_libraries(depth_cam_stream_codec_core PUBLIC
 # ── ros2 library ─────────────────────────────────────────────────────────────
 add_library(depth_cam_stream_codec_ros2
     src/ros2/color_frame_adapter.cpp
-    src/ros2/color_frame_adapter_config.cpp
-    src/ros2/color_frame_adapter_node.cpp
-    src/config/color_frame_adapter_yaml.cpp
 )
 
 target_link_libraries(depth_cam_stream_codec_ros2 PUBLIC

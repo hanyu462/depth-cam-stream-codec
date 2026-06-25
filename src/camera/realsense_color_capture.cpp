@@ -6,7 +6,7 @@
 
 namespace depth_cam_stream_codec::camera {
 
-RealSenseColorCapture::RealSenseColorCapture(std::shared_ptr<ColorBuffer> buffer,
+RealSenseColorCapture::RealSenseColorCapture(std::shared_ptr<ColorFrameBuffer> buffer,
                                              RealsenseColorConfig         config)
     : buffer_(std::move(buffer))
     , config_(config)
@@ -46,16 +46,25 @@ void RealSenseColorCapture::run()
         rs2::video_frame vf = frames.get_color_frame();
         if (!vf) continue;
 
+        const int w      = vf.get_width();
+        const int h      = vf.get_height();
+        const int stride = vf.get_stride_in_bytes();
+        const int size   = vf.get_data_size();
+
+        if (w <= 0 || h <= 0 || stride <= 0 || size == 0) {
+            std::fprintf(stderr, "Invalid RealSense color frame dimensions — skipping\n");
+            continue;
+        }
+
         common::ColorFrame frame;
-        frame.width        = vf.get_width();
-        frame.height       = vf.get_height();
-        frame.stride_bytes = vf.get_stride_in_bytes();
+        frame.width        = w;
+        frame.height       = h;
+        frame.stride_bytes = stride;
         frame.stamp_ns     = static_cast<std::int64_t>(vf.get_timestamp() * 1'000'000.0);
         frame.frame_id     = "camera_color_optical_frame";
 
-        const std::size_t nbytes = static_cast<std::size_t>(frame.stride_bytes * frame.height);
-        frame.data.resize(nbytes);
-        std::memcpy(frame.data.data(), vf.get_data(), nbytes);
+        frame.data.resize(size);
+        std::memcpy(frame.data.data(), vf.get_data(), size);
 
         buffer_->write(std::move(frame));
     }

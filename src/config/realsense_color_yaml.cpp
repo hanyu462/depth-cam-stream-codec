@@ -20,10 +20,14 @@ camera::RealsenseColorConfig load_realsense_color_config(const std::string& path
     if (!node)
         throw std::runtime_error("missing key: realsense_color");
 
+    if (!node["width"])  throw std::runtime_error("missing key: realsense_color.width in "  + path);
+    if (!node["height"]) throw std::runtime_error("missing key: realsense_color.height in " + path);
+    if (!node["fps"])    throw std::runtime_error("missing key: realsense_color.fps in "    + path);
+
     camera::RealsenseColorConfig cfg;
-    cfg.width  = node["width"].as<int>(cfg.width);
-    cfg.height = node["height"].as<int>(cfg.height);
-    cfg.fps    = node["fps"].as<int>(cfg.fps);
+    cfg.width  = node["width"].as<int>();
+    cfg.height = node["height"].as<int>();
+    cfg.fps    = node["fps"].as<int>();
 
     validate_realsense_color_config(cfg);
     return cfg;
