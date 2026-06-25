@@ -4,7 +4,7 @@
 
 namespace depth_cam_stream_codec::ros2 {
 
-ColorFrameAdapterNode::ColorFrameAdapterNode(std::shared_ptr<ColorBuffer>   buffer,
+ColorFrameAdapterNode::ColorFrameAdapterNode(std::shared_ptr<ColorFrameBuffer>   buffer,
                                              const ColorFrameAdapterConfig& config)
     : rclcpp::Node("color_frame_adapter_node")
     , buffer_(std::move(buffer))

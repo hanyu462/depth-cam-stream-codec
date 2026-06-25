@@ -11,17 +11,17 @@
 
 namespace depth_cam_stream_codec::ros2 {
 
-using ColorBuffer = common::LatestBuffer<common::ColorFrame>;
+using ColorFrameBuffer = common::LatestBuffer<common::ColorFrame>;
 
 class ColorFrameAdapterNode : public rclcpp::Node {
 public:
-    ColorFrameAdapterNode(std::shared_ptr<ColorBuffer>  buffer,
+    ColorFrameAdapterNode(std::shared_ptr<ColorFrameBuffer>  buffer,
                           const ColorFrameAdapterConfig& config);
 
 private:
     void publish_latest();
 
-    std::shared_ptr<ColorBuffer> buffer_;
+    std::shared_ptr<ColorFrameBuffer> buffer_;
     std::uint64_t                last_seq_{0};
 
     rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr pub_;

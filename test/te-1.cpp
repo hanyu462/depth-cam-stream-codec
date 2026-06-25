@@ -27,13 +27,8 @@ using namespace depth_cam_stream_codec;
 
 static void print_frame(const common::ColorFrame& f, std::uint64_t seq)
 {
-    std::printf("\n── ColorFrame ───────────────────────────\n");
-    std::printf("  stamp_ns : %ld\n",   f.stamp_ns);
-    std::printf("  frame_id : %s\n",    f.frame_id.c_str());
-    std::printf("  size     : %d x %d\n", f.width, f.height);
-    std::printf("  stride   : %d\n",    f.stride_bytes);
-    std::printf("  bytes    : %zu\n",   f.data.size());
-    std::printf("  seq      : %lu\n",   seq);
+    std::printf("[te-1] seq=%-6lu  %dx%d  %zu bytes\n",
+        seq, f.width, f.height, f.data.size());
 }
 
 int main(int argc, char** argv)
@@ -46,7 +41,7 @@ int main(int argc, char** argv)
     const auto rs_cfg      = config::load_realsense_color_config(rs_path);
     const auto adapter_cfg = config::load_color_frame_adapter_config(adapter_path);
 
-    auto buffer       = std::make_shared<camera::ColorBuffer>();
+    auto buffer       = std::make_shared<camera::ColorFrameBuffer>();
     auto capture      = std::make_shared<camera::RealSenseColorCapture>(buffer, rs_cfg);
     auto adapter_node = std::make_shared<ros2::ColorFrameAdapterNode>(buffer, adapter_cfg);
 
@@ -62,7 +57,8 @@ int main(int argc, char** argv)
     while (rclcpp::ok()) {
         if (auto snap = buffer->read_if_new(last_seq)) {
             last_seq = snap->sequence;
-            print_frame(*snap->value, snap->sequence);
+            if (last_seq % 30 == 0)
+                print_frame(*snap->value, snap->sequence);
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
