@@ -1,0 +1,4 @@
+color_frame_adapter:
+  topic:      /camera/color/image_raw
+  queue_size: 10
+  timer_ms:   33
