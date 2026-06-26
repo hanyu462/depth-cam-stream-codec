@@ -1,0 +1,6 @@
+decoder_pipeline:
+  color:
+    topic: /camera/color/image_compressed
+
+  depth:
+    topic: /camera/depth/image_compressed

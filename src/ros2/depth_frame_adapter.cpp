@@ -1,10 +1,10 @@
-#include "depth_cam_stream_codec/ros2/color_frame_adapter.hpp"
+#include "depth_cam_stream_codec/ros2/depth_frame_adapter.hpp"
 
 #include <stdexcept>
 
 namespace depth_cam_stream_codec::ros2 {
 
-sensor_msgs::msg::Image convert_color_frame_to_ros(const common::ColorFrame& frame)
+sensor_msgs::msg::Image convert_depth_frame_to_ros(const common::DepthFrame& frame)
 {
     sensor_msgs::msg::Image msg;
 
@@ -12,22 +12,22 @@ sensor_msgs::msg::Image convert_color_frame_to_ros(const common::ColorFrame& fra
     msg.header.stamp.nanosec = static_cast<uint32_t>(frame.stamp_ns % 1'000'000'000LL);
     msg.header.frame_id      = frame.frame_id;
 
-    msg.width       = static_cast<uint32_t>(frame.width);
-    msg.height      = static_cast<uint32_t>(frame.height);
-    msg.step        = static_cast<uint32_t>(frame.stride_bytes);
-    msg.encoding    = "bgr8";
+    msg.width        = static_cast<uint32_t>(frame.width);
+    msg.height       = static_cast<uint32_t>(frame.height);
+    msg.step         = static_cast<uint32_t>(frame.stride_bytes);
+    msg.encoding     = "16UC1";
     msg.is_bigendian = 0;
-    msg.data        = frame.data;
+    msg.data         = frame.data;
 
     return msg;
 }
 
-common::ColorFrame convert_ros_to_color_frame(const sensor_msgs::msg::Image& msg)
+common::DepthFrame convert_ros_to_depth_frame(const sensor_msgs::msg::Image& msg)
 {
-    if (msg.encoding != "bgr8")
-        throw std::runtime_error("color_frame_adapter: unsupported encoding: " + msg.encoding);
+    if (msg.encoding != "16UC1")
+        throw std::runtime_error("depth_frame_adapter: unsupported encoding: " + msg.encoding);
 
-    common::ColorFrame frame;
+    common::DepthFrame frame;
     frame.width        = static_cast<int>(msg.width);
     frame.height       = static_cast<int>(msg.height);
     frame.stride_bytes = static_cast<int>(msg.step);
