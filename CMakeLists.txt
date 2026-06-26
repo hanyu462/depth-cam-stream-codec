@@ -10,6 +10,8 @@ add_compile_options(-Wall -Wextra -Wpedantic)
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp      REQUIRED)
 find_package(sensor_msgs REQUIRED)
+# Debian/Ubuntu multi-arch 설치 경로를 cmake 탐색 경로에 추가
+list(APPEND CMAKE_PREFIX_PATH /usr/lib/${CMAKE_LIBRARY_ARCHITECTURE})
 find_package(realsense2  REQUIRED)
 find_package(yaml-cpp    REQUIRED)
 
@@ -21,6 +23,9 @@ add_library(depth_cam_stream_codec_core
     src/camera/realsense_depth_capture.cpp
     src/camera/realsense_depth_config.cpp
     src/config/realsense_depth_yaml.cpp
+    src/camera/realsense_pipeline_config.cpp
+    src/camera/realsense_pipeline.cpp
+    src/config/realsense_pipeline_yaml.cpp
 )
 
 target_include_directories(depth_cam_stream_codec_core PUBLIC
@@ -55,7 +60,10 @@ target_link_libraries(te-1 PRIVATE depth_cam_stream_codec_ros2)
 add_executable(te-2 test/te-2.cpp)
 target_link_libraries(te-2 PRIVATE depth_cam_stream_codec_ros2)
 
-install(TARGETS te-1 te-2
+add_executable(te-3 test/te-3.cpp)
+target_link_libraries(te-3 PRIVATE depth_cam_stream_codec_ros2)
+
+install(TARGETS te-1 te-2 te-3
     DESTINATION lib/${PROJECT_NAME}
 )
 

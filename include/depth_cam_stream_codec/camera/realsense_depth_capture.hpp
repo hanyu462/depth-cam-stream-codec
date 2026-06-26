@@ -5,12 +5,9 @@
 #include <thread>
 
 #include "depth_cam_stream_codec/camera/realsense_depth_config.hpp"
-#include "depth_cam_stream_codec/common/depth_frame.hpp"
-#include "depth_cam_stream_codec/common/latest_buffer.hpp"
+#include "depth_cam_stream_codec/common/frame_buffers.hpp"
 
 namespace depth_cam_stream_codec::camera {
-
-using DepthFrameBuffer = common::LatestBuffer<common::DepthFrame>;
 
 class RealSenseDepthCapture {
 public:
