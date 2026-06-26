@@ -2,14 +2,18 @@
 
 namespace depth_cam_stream_codec::ros2 {
 
-sensor_msgs::msg::CompressedImage
+depth_cam_stream_codec::msg::CompressedColorFrame
 convert_h264_color_frame_to_ros(const codec::H264ColorFrame& frame)
 {
-    sensor_msgs::msg::CompressedImage msg;
+    depth_cam_stream_codec::msg::CompressedColorFrame msg;
 
     msg.header.stamp.sec     = static_cast<int32_t>(frame.stamp_ns / 1'000'000'000LL);
     msg.header.stamp.nanosec = static_cast<uint32_t>(frame.stamp_ns % 1'000'000'000LL);
     msg.header.frame_id      = frame.frame_id;
+    msg.sequence             = frame.sequence;
+    msg.width                = static_cast<uint32_t>(frame.width);
+    msg.height               = static_cast<uint32_t>(frame.height);
+    msg.is_keyframe          = frame.is_keyframe;
     msg.format               = "h264";
     msg.data                 = frame.data;
 
@@ -17,14 +21,18 @@ convert_h264_color_frame_to_ros(const codec::H264ColorFrame& frame)
 }
 
 codec::H264ColorFrame
-convert_ros_to_h264_color_frame(const sensor_msgs::msg::CompressedImage& msg)
+convert_ros_to_h264_color_frame(const depth_cam_stream_codec::msg::CompressedColorFrame& msg)
 {
     codec::H264ColorFrame frame;
 
-    frame.stamp_ns  = static_cast<int64_t>(msg.header.stamp.sec) * 1'000'000'000LL
-                    + static_cast<int64_t>(msg.header.stamp.nanosec);
-    frame.frame_id  = msg.header.frame_id;
-    frame.data      = msg.data;
+    frame.stamp_ns    = static_cast<int64_t>(msg.header.stamp.sec) * 1'000'000'000LL
+                      + static_cast<int64_t>(msg.header.stamp.nanosec);
+    frame.frame_id    = msg.header.frame_id;
+    frame.sequence    = msg.sequence;
+    frame.width       = static_cast<int>(msg.width);
+    frame.height      = static_cast<int>(msg.height);
+    frame.is_keyframe = msg.is_keyframe;
+    frame.data        = msg.data;
 
     return frame;
 }

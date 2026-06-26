@@ -102,6 +102,7 @@ std::optional<H264ColorFrame> H264ColorEncoder::encode(const common::ColorFrame&
     H264ColorFrame result;
     result.width       = frame.width;
     result.height      = frame.height;
+    result.sequence    = frame.sequence;
     result.stamp_ns    = frame.stamp_ns;
     result.frame_id    = frame.frame_id;
     result.is_keyframe = (pic_out_.b_keyframe != 0);

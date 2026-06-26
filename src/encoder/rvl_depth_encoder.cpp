@@ -65,6 +65,7 @@ RVLDepthFrame RVLDepthEncoder::encode(const common::DepthFrame& frame) const
     RVLDepthFrame result;
     result.width       = frame.width;
     result.height      = frame.height;
+    result.sequence    = frame.sequence;
     result.stamp_ns    = frame.stamp_ns;
     result.frame_id    = frame.frame_id;
     result.depth_scale = frame.depth_scale;

@@ -26,6 +26,7 @@ pkg_check_modules(SWSCALE REQUIRED libswscale)
 
 # ── custom messages ───────────────────────────────────────────────────────────
 rosidl_generate_interfaces(${PROJECT_NAME}
+    "msg/CompressedColorFrame.msg"
     "msg/CompressedDepthFrame.msg"
     DEPENDENCIES std_msgs
 )

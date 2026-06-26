@@ -7,13 +7,13 @@
 #include <thread>
 
 #include <rclcpp/rclcpp.hpp>
-#include <sensor_msgs/msg/compressed_image.hpp>
 
 #include "depth_cam_stream_codec/camera/realsense_pipeline.hpp"
 #include "depth_cam_stream_codec/camera/realsense_pipeline_config.hpp"
 #include "depth_cam_stream_codec/encoder/h264_color_encoder.hpp"
 #include "depth_cam_stream_codec/encoder/rvl_depth_encoder.hpp"
 #include "depth_cam_stream_codec/common/frame_buffers.hpp"
+#include "depth_cam_stream_codec/msg/compressed_color_frame.hpp"
 #include "depth_cam_stream_codec/msg/compressed_depth_frame.hpp"
 
 namespace depth_cam_stream_codec::encoder {
@@ -54,7 +54,7 @@ private:
     codec::RVLDepthEncoder                 rvl_enc_;
 
     // Publishers
-    rclcpp::Publisher<sensor_msgs::msg::CompressedImage>::SharedPtr              color_pub_;
+    rclcpp::Publisher<depth_cam_stream_codec::msg::CompressedColorFrame>::SharedPtr color_pub_;
     rclcpp::Publisher<depth_cam_stream_codec::msg::CompressedDepthFrame>::SharedPtr depth_pub_;
 
     // Encode + publish threads (T2, T3)

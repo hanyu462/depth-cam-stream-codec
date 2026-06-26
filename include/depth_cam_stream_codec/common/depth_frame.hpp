@@ -11,9 +11,10 @@ struct DepthFrame {
     int height       = 0;
     int stride_bytes = 0;
 
-    std::int64_t stamp_ns    = 0;
-    std::string  frame_id;
-    float        depth_scale = 0.001f;  // meters per Z16 unit
+    std::uint64_t sequence    = 0;
+    std::int64_t  stamp_ns    = 0;
+    std::string   frame_id;
+    float         depth_scale = 0.001f;  // meters per Z16 unit
 
     // Z16: 16-bit depth per pixel
     std::vector<std::uint8_t> data;

@@ -11,8 +11,9 @@ struct ColorFrame {
     int height       = 0;
     int stride_bytes = 0;
 
-    std::int64_t stamp_ns = 0;
-    std::string  frame_id;
+    std::uint64_t sequence = 0;
+    std::int64_t  stamp_ns = 0;
+    std::string   frame_id;
 
     // BGR8 고정
     std::vector<std::uint8_t> data;
