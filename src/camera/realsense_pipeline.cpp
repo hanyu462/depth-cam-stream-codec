@@ -92,7 +92,7 @@ void RealSensePipeline::run()
                     frame.height       = h;
                     frame.stride_bytes = stride;
                     frame.stamp_ns     = static_cast<std::int64_t>(vf.get_timestamp() * 1'000'000.0);
-                    frame.frame_id     = "camera_color_optical_frame";
+                    frame.frame_id     = config_.color->frame_id;
                     frame.data.resize(size);
                     std::memcpy(frame.data.data(), vf.get_data(), size);
                     color_buffer_->write(std::move(frame));
@@ -118,7 +118,7 @@ void RealSensePipeline::run()
                     frame.height       = h;
                     frame.stride_bytes = stride;
                     frame.stamp_ns     = static_cast<std::int64_t>(df.get_timestamp() * 1'000'000.0);
-                    frame.frame_id     = "camera_depth_optical_frame";
+                    frame.frame_id     = config_.depth->frame_id;
                     frame.data.resize(size);
                     std::memcpy(frame.data.data(), df.get_data(), size);
                     depth_buffer_->write(std::move(frame));

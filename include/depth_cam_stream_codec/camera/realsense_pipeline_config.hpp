@@ -1,13 +1,19 @@
 #pragma once
 
 #include <optional>
+#include <string>
+
+#include "depth_cam_stream_codec/codec/h264_encoder_config.hpp"
 
 namespace depth_cam_stream_codec::camera {
 
 struct PipelineColorConfig {
-    int width;
-    int height;
-    int fps;
+    int         width;
+    int         height;
+    int         fps;
+    std::string topic;
+    std::string frame_id;
+    std::optional<codec::H264EncoderConfig> h264;
 };
 
 struct PipelineSpatialFilterConfig {
@@ -17,10 +23,12 @@ struct PipelineSpatialFilterConfig {
 };
 
 struct PipelineDepthConfig {
-    int  width;
-    int  height;
-    int  fps;
-    bool align_to_color;
+    int         width;
+    int         height;
+    int         fps;
+    std::string topic;
+    std::string frame_id;
+    bool        align_to_color;
     std::optional<PipelineSpatialFilterConfig> spatial_filter;
 };
 
