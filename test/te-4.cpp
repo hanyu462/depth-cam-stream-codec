@@ -13,7 +13,7 @@
 #include <rclcpp/rclcpp.hpp>
 
 #include "depth_cam_stream_codec/config/realsense_pipeline_yaml.hpp"
-#include "depth_cam_stream_codec/stream/compressed_stream_pipeline.hpp"
+#include "depth_cam_stream_codec/encoder/encoder_pipeline.hpp"
 
 using namespace depth_cam_stream_codec;
 
@@ -26,7 +26,7 @@ int main(int argc, char** argv)
         const auto cfg = config::load_realsense_pipeline_config(path);
 
         auto node     = rclcpp::Node::make_shared("te_4");
-        auto pipeline = std::make_shared<stream::CompressedStreamPipeline>(cfg, node);
+        auto pipeline = std::make_shared<encoder::EncoderPipeline>(cfg, node);
 
         pipeline->start();
         rclcpp::spin(node);

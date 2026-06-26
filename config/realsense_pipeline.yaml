@@ -48,6 +48,10 @@ realsense_pipeline:
     frame_id: camera_depth_optical_frame
     align_to_color: true
 
+    # rvl section is optional. If absent, depth frames are published without encoding.
+    # Sub-keys will be added as RVL parameters are introduced.
+    rvl: {}
+
     # spatial_filter section is optional. If absent, the filter is disabled.
     spatial_filter:
       # Number of filter passes (1 ~ 5).

@@ -1,9 +1,9 @@
-#include "depth_cam_stream_codec/ros2/compressed_depth_frame_adapter.hpp"
+#include "depth_cam_stream_codec/ros2/rvl_depth_frame_adapter.hpp"
 
 namespace depth_cam_stream_codec::ros2 {
 
 depth_cam_stream_codec::msg::CompressedDepthFrame
-convert_compressed_depth_frame_to_ros(const codec::CompressedDepthFrame& frame)
+convert_rvl_depth_frame_to_ros(const codec::RVLDepthFrame& frame)
 {
     depth_cam_stream_codec::msg::CompressedDepthFrame msg;
 
@@ -17,6 +17,22 @@ convert_compressed_depth_frame_to_ros(const codec::CompressedDepthFrame& frame)
     msg.data                 = frame.data;
 
     return msg;
+}
+
+codec::RVLDepthFrame
+convert_ros_to_rvl_depth_frame(const depth_cam_stream_codec::msg::CompressedDepthFrame& msg)
+{
+    codec::RVLDepthFrame frame;
+
+    frame.stamp_ns    = static_cast<int64_t>(msg.header.stamp.sec) * 1'000'000'000LL
+                      + static_cast<int64_t>(msg.header.stamp.nanosec);
+    frame.frame_id    = msg.header.frame_id;
+    frame.width       = static_cast<int>(msg.width);
+    frame.height      = static_cast<int>(msg.height);
+    frame.depth_scale = msg.depth_scale;
+    frame.data        = msg.data;
+
+    return frame;
 }
 
 }  // namespace depth_cam_stream_codec::ros2

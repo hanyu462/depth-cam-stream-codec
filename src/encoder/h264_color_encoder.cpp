@@ -1,4 +1,4 @@
-#include "depth_cam_stream_codec/codec/h264_color_encoder.hpp"
+#include "depth_cam_stream_codec/encoder/h264_color_encoder.hpp"
 
 #include <stdexcept>
 
@@ -76,7 +76,7 @@ void H264ColorEncoder::reset(const H264EncoderConfig& new_cfg)
     open(new_cfg);
 }
 
-std::optional<CompressedColorFrame> H264ColorEncoder::encode(const common::ColorFrame& frame)
+std::optional<H264ColorFrame> H264ColorEncoder::encode(const common::ColorFrame& frame)
 {
     if (!encoder_) return std::nullopt;
 
@@ -97,7 +97,7 @@ std::optional<CompressedColorFrame> H264ColorEncoder::encode(const common::Color
 
     if (frame_size <= 0) return std::nullopt;
 
-    CompressedColorFrame result;
+    H264ColorFrame result;
     result.width       = frame.width;
     result.height      = frame.height;
     result.stamp_ns    = frame.stamp_ns;

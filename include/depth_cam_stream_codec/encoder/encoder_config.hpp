@@ -15,4 +15,8 @@ struct H264EncoderConfig {
     int         keyframe_interval;
 };
 
+struct RVLEncoderConfig {
+    // reserved for future use
+};
+
 }  // namespace depth_cam_stream_codec::codec

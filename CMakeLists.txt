@@ -46,8 +46,8 @@ target_link_libraries(depth_cam_stream_codec_core PUBLIC
 
 # ── codec library (encoders, ROS 비의존) ─────────────────────────────────────
 add_library(depth_cam_stream_codec_codec
-    src/codec/h264_color_encoder.cpp
-    src/codec/rvl_depth_encoder.cpp
+    src/encoder/h264_color_encoder.cpp
+    src/encoder/rvl_depth_encoder.cpp
 )
 
 target_include_directories(depth_cam_stream_codec_codec PUBLIC
@@ -65,9 +65,9 @@ target_link_libraries(depth_cam_stream_codec_codec PUBLIC
 add_library(depth_cam_stream_codec_ros2
     src/ros2/color_frame_adapter.cpp
     src/ros2/depth_frame_adapter.cpp
-    src/ros2/compressed_color_frame_adapter.cpp
-    src/ros2/compressed_depth_frame_adapter.cpp
-    src/stream/compressed_stream_pipeline.cpp
+    src/ros2/h264_color_frame_adapter.cpp
+    src/ros2/rvl_depth_frame_adapter.cpp
+    src/encoder/encoder_pipeline.cpp
 )
 
 target_link_libraries(depth_cam_stream_codec_ros2 PUBLIC

@@ -6,8 +6,8 @@
 
 #include <x264.h>
 
-#include "depth_cam_stream_codec/codec/compressed_color_frame.hpp"
-#include "depth_cam_stream_codec/codec/h264_encoder_config.hpp"
+#include "depth_cam_stream_codec/common/h264_color_frame.hpp"
+#include "depth_cam_stream_codec/encoder/encoder_config.hpp"
 #include "depth_cam_stream_codec/common/color_frame.hpp"
 
 namespace depth_cam_stream_codec::codec {
@@ -20,7 +20,7 @@ public:
     H264ColorEncoder(const H264ColorEncoder&)            = delete;
     H264ColorEncoder& operator=(const H264ColorEncoder&) = delete;
 
-    std::optional<CompressedColorFrame> encode(const common::ColorFrame& frame);
+    std::optional<H264ColorFrame> encode(const common::ColorFrame& frame);
     void flush();
     void reset(const H264EncoderConfig& new_cfg);
 

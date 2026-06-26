@@ -3,7 +3,7 @@
 #include <optional>
 #include <string>
 
-#include "depth_cam_stream_codec/codec/h264_encoder_config.hpp"
+#include "depth_cam_stream_codec/encoder/encoder_config.hpp"
 
 namespace depth_cam_stream_codec::camera {
 
@@ -30,6 +30,7 @@ struct PipelineDepthConfig {
     std::string frame_id;
     bool        align_to_color;
     std::optional<PipelineSpatialFilterConfig> spatial_filter;
+    std::optional<codec::RVLEncoderConfig>     rvl;
 };
 
 struct RealsensePipelineConfig {

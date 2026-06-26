@@ -1,4 +1,4 @@
-#include "depth_cam_stream_codec/codec/rvl_depth_encoder.hpp"
+#include "depth_cam_stream_codec/encoder/rvl_depth_encoder.hpp"
 
 #include <algorithm>
 #include <vector>
@@ -88,7 +88,7 @@ private:
 
 }  // namespace
 
-CompressedDepthFrame RVLDepthEncoder::encode(const common::DepthFrame& frame) const
+RVLDepthFrame RVLDepthEncoder::encode(const common::DepthFrame& frame) const
 {
     const int pixel_count = frame.width * frame.height;
 
@@ -100,7 +100,7 @@ CompressedDepthFrame RVLDepthEncoder::encode(const common::DepthFrame& frame) co
         std::copy(src, src + frame.width, pixels.data() + row * frame.width);
     }
 
-    CompressedDepthFrame result;
+    RVLDepthFrame result;
     result.width    = frame.width;
     result.height   = frame.height;
     result.stamp_ns = frame.stamp_ns;

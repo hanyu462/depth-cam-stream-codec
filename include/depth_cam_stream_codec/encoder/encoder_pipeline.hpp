@@ -11,12 +11,12 @@
 
 #include "depth_cam_stream_codec/camera/realsense_pipeline.hpp"
 #include "depth_cam_stream_codec/camera/realsense_pipeline_config.hpp"
-#include "depth_cam_stream_codec/codec/h264_color_encoder.hpp"
-#include "depth_cam_stream_codec/codec/rvl_depth_encoder.hpp"
+#include "depth_cam_stream_codec/encoder/h264_color_encoder.hpp"
+#include "depth_cam_stream_codec/encoder/rvl_depth_encoder.hpp"
 #include "depth_cam_stream_codec/common/frame_buffers.hpp"
 #include "depth_cam_stream_codec/msg/compressed_depth_frame.hpp"
 
-namespace depth_cam_stream_codec::stream {
+namespace depth_cam_stream_codec::encoder {
 
 // Owns all threads and components for camera capture, encoding, and publishing.
 //
@@ -24,16 +24,16 @@ namespace depth_cam_stream_codec::stream {
 //   T1 (inside RealSensePipeline) : camera capture
 //   T2 (t_color_)                 : H.264 encode + publish, event-driven
 //   T3 (t_depth_)                 : RVL encode + publish, event-driven
-class CompressedStreamPipeline {
+class EncoderPipeline {
 public:
-    CompressedStreamPipeline(
+    EncoderPipeline(
         const camera::RealsensePipelineConfig& cfg,
         rclcpp::Node::SharedPtr                node);
 
-    ~CompressedStreamPipeline();
+    ~EncoderPipeline();
 
-    CompressedStreamPipeline(const CompressedStreamPipeline&)            = delete;
-    CompressedStreamPipeline& operator=(const CompressedStreamPipeline&) = delete;
+    EncoderPipeline(const EncoderPipeline&)            = delete;
+    EncoderPipeline& operator=(const EncoderPipeline&) = delete;
 
     void start();
     void stop();
@@ -63,4 +63,4 @@ private:
     std::thread       t_depth_;
 };
 
-}  // namespace depth_cam_stream_codec::stream
+}  // namespace depth_cam_stream_codec::encoder

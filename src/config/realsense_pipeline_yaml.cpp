@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <yaml-cpp/yaml.h>
 
-#include "depth_cam_stream_codec/codec/h264_encoder_config.hpp"
+#include "depth_cam_stream_codec/encoder/encoder_config.hpp"
 
 namespace depth_cam_stream_codec::config {
 
@@ -85,6 +85,10 @@ camera::RealsensePipelineConfig load_realsense_pipeline_config(const std::string
             spatial.smooth_delta = sf["smooth_delta"].as<float>();
             depth.spatial_filter = spatial;
         }
+
+        if (d["rvl"])
+            depth.rvl = codec::RVLEncoderConfig{};
+
 
         cfg.depth = depth;
     }
