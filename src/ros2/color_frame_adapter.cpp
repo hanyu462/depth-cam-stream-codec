@@ -1,6 +1,5 @@
 #include "depth_cam_stream_codec/ros2/color_frame_adapter.hpp"
 
-#include <cstring>
 #include <stdexcept>
 
 namespace depth_cam_stream_codec::ros2 {

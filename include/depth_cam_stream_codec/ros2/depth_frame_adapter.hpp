@@ -7,5 +7,6 @@
 namespace depth_cam_stream_codec::ros2 {
 
 sensor_msgs::msg::Image convert_depth_frame_to_ros(const common::DepthFrame& frame);
+common::DepthFrame      convert_ros_to_depth_frame(const sensor_msgs::msg::Image& msg);
 
 }  // namespace depth_cam_stream_codec::ros2

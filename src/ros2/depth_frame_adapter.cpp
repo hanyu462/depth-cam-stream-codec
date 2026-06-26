@@ -1,5 +1,7 @@
 #include "depth_cam_stream_codec/ros2/depth_frame_adapter.hpp"
 
+#include <stdexcept>
+
 namespace depth_cam_stream_codec::ros2 {
 
 sensor_msgs::msg::Image convert_depth_frame_to_ros(const common::DepthFrame& frame)
@@ -18,6 +20,23 @@ sensor_msgs::msg::Image convert_depth_frame_to_ros(const common::DepthFrame& fra
     msg.data         = frame.data;
 
     return msg;
+}
+
+common::DepthFrame convert_ros_to_depth_frame(const sensor_msgs::msg::Image& msg)
+{
+    if (msg.encoding != "16UC1")
+        throw std::runtime_error("depth_frame_adapter: unsupported encoding: " + msg.encoding);
+
+    common::DepthFrame frame;
+    frame.width        = static_cast<int>(msg.width);
+    frame.height       = static_cast<int>(msg.height);
+    frame.stride_bytes = static_cast<int>(msg.step);
+    frame.stamp_ns     = static_cast<std::int64_t>(msg.header.stamp.sec) * 1'000'000'000LL
+                       + static_cast<std::int64_t>(msg.header.stamp.nanosec);
+    frame.frame_id     = msg.header.frame_id;
+    frame.data         = msg.data;
+
+    return frame;
 }
 
 }  // namespace depth_cam_stream_codec::ros2
