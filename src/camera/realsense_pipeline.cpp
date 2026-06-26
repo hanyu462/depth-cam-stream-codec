@@ -55,7 +55,16 @@ void RealSensePipeline::run()
                               RS2_FORMAT_BGR8, config_.depth->fps);
     }
 
-    pipe.start(cfg);
+    rs2::pipeline_profile profile = pipe.start(cfg);
+
+    float depth_scale = 0.001f;
+    if (config_.depth) {
+        try {
+            depth_scale = profile.get_device()
+                              .first<rs2::depth_sensor>()
+                              .get_depth_scale();
+        } catch (...) {}
+    }
 
     std::optional<rs2::align> align_filter;
     if (config_.depth && config_.depth->align_to_color)
@@ -119,6 +128,7 @@ void RealSensePipeline::run()
                     frame.stride_bytes = stride;
                     frame.stamp_ns     = static_cast<std::int64_t>(df.get_timestamp() * 1'000'000.0);
                     frame.frame_id     = config_.depth->frame_id;
+                    frame.depth_scale  = depth_scale;
                     frame.data.resize(size);
                     std::memcpy(frame.data.data(), df.get_data(), size);
                     depth_buffer_->write(std::move(frame));

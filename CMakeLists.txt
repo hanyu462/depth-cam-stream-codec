@@ -19,7 +19,10 @@ find_package(realsense2 REQUIRED)
 find_package(yaml-cpp   REQUIRED)
 
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(X264 REQUIRED x264)
+pkg_check_modules(X264    REQUIRED x264)
+pkg_check_modules(AVCODEC REQUIRED libavcodec)
+pkg_check_modules(AVUTIL  REQUIRED libavutil)
+pkg_check_modules(SWSCALE REQUIRED libswscale)
 
 # ── custom messages ───────────────────────────────────────────────────────────
 rosidl_generate_interfaces(${PROJECT_NAME}
@@ -32,6 +35,7 @@ add_library(depth_cam_stream_codec_core
     src/camera/realsense_pipeline_config.cpp
     src/camera/realsense_pipeline.cpp
     src/config/realsense_pipeline_yaml.cpp
+    src/config/decoder_pipeline_yaml.cpp
 )
 
 target_include_directories(depth_cam_stream_codec_core PUBLIC
@@ -44,10 +48,11 @@ target_link_libraries(depth_cam_stream_codec_core PUBLIC
     yaml-cpp
 )
 
-# ── codec library (encoders, ROS 비의존) ─────────────────────────────────────
+# ── codec library (encoders + decoders, ROS 비의존) ──────────────────────────
 add_library(depth_cam_stream_codec_codec
     src/encoder/h264_color_encoder.cpp
     src/encoder/rvl_depth_encoder.cpp
+    src/decoder/rvl_depth_decoder.cpp
 )
 
 target_include_directories(depth_cam_stream_codec_codec PUBLIC
@@ -68,10 +73,21 @@ add_library(depth_cam_stream_codec_ros2
     src/ros2/h264_color_frame_adapter.cpp
     src/ros2/rvl_depth_frame_adapter.cpp
     src/encoder/encoder_pipeline.cpp
+    src/decoder/h264_color_decoder.cpp
+    src/decoder/decoder_pipeline.cpp
+)
+
+target_include_directories(depth_cam_stream_codec_ros2 PUBLIC
+    ${AVCODEC_INCLUDE_DIRS}
+    ${AVUTIL_INCLUDE_DIRS}
+    ${SWSCALE_INCLUDE_DIRS}
 )
 
 target_link_libraries(depth_cam_stream_codec_ros2 PUBLIC
     depth_cam_stream_codec_codec
+    ${AVCODEC_LIBRARIES}
+    ${AVUTIL_LIBRARIES}
+    ${SWSCALE_LIBRARIES}
 )
 
 ament_target_dependencies(depth_cam_stream_codec_ros2 PUBLIC
@@ -92,7 +108,10 @@ target_link_libraries(te-3 PRIVATE depth_cam_stream_codec_ros2)
 add_executable(te-4 test/te-4.cpp)
 target_link_libraries(te-4 PRIVATE depth_cam_stream_codec_ros2)
 
-install(TARGETS te-3 te-4
+add_executable(te-5 test/te-5.cpp)
+target_link_libraries(te-5 PRIVATE depth_cam_stream_codec_ros2)
+
+install(TARGETS te-3 te-4 te-5
     DESTINATION lib/${PROJECT_NAME}
 )
 

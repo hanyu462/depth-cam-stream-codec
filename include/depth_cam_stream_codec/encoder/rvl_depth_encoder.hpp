@@ -13,9 +13,6 @@ public:
     RVLDepthEncoder() = default;
 
     RVLDepthFrame encode(const common::DepthFrame& frame) const;
-
-    static void decode(const uint8_t* compressed, size_t compressed_size,
-                       int pixel_count, uint16_t* out_pixels);
 };
 
 }  // namespace depth_cam_stream_codec::codec

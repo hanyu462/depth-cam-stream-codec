@@ -48,44 +48,6 @@ private:
     int     bit_pos_  = 0;
 };
 
-class BitReader {
-public:
-    BitReader(const uint8_t* data, size_t size) : data_(data), size_(size) {}
-
-    uint32_t read_vle()
-    {
-        uint32_t value = 0;
-        uint32_t shift = 0;
-        uint8_t  nibble;
-        do {
-            nibble  = read_nibble();
-            value  |= static_cast<uint32_t>(nibble & 0x7u) << shift;
-            shift  += 3;
-        } while (nibble & 0x8u);
-        return value;
-    }
-
-private:
-    uint8_t read_nibble()
-    {
-        uint8_t nibble = 0;
-        for (int i = 3; i >= 0; --i) {
-            if (bit_pos_ == 0) {
-                cur_byte_ = (byte_pos_ < size_) ? data_[byte_pos_++] : 0;
-                bit_pos_  = 8;
-            }
-            nibble = static_cast<uint8_t>(nibble | (((cur_byte_ >> --bit_pos_) & 1) << i));
-        }
-        return nibble;
-    }
-
-    const uint8_t* data_;
-    size_t         size_;
-    size_t         byte_pos_ = 0;
-    uint8_t        cur_byte_ = 0;
-    int            bit_pos_  = 0;
-};
-
 }  // namespace
 
 RVLDepthFrame RVLDepthEncoder::encode(const common::DepthFrame& frame) const
@@ -101,10 +63,11 @@ RVLDepthFrame RVLDepthEncoder::encode(const common::DepthFrame& frame) const
     }
 
     RVLDepthFrame result;
-    result.width    = frame.width;
-    result.height   = frame.height;
-    result.stamp_ns = frame.stamp_ns;
-    result.frame_id = frame.frame_id;
+    result.width       = frame.width;
+    result.height      = frame.height;
+    result.stamp_ns    = frame.stamp_ns;
+    result.frame_id    = frame.frame_id;
+    result.depth_scale = frame.depth_scale;
     result.data.reserve(frame.data.size() / 2);
 
     BitWriter writer(result.data);
@@ -137,33 +100,6 @@ RVLDepthFrame RVLDepthEncoder::encode(const common::DepthFrame& frame) const
 
     writer.flush();
     return result;
-}
-
-void RVLDepthEncoder::decode(const uint8_t* compressed, size_t compressed_size,
-                              int pixel_count, uint16_t* out_pixels)
-{
-    BitReader reader(compressed, compressed_size);
-    uint16_t prev = 0;
-    int i = 0;
-
-    while (i < pixel_count) {
-        const int zero_run = static_cast<int>(reader.read_vle());
-        for (int k = 0; k < zero_run && i < pixel_count; ++k, ++i)
-            out_pixels[i] = 0;
-
-        if (i >= pixel_count) break;
-
-        const int nonzero_run = static_cast<int>(reader.read_vle());
-        for (int k = 0; k < nonzero_run && i < pixel_count; ++k, ++i) {
-            const uint32_t encoded = reader.read_vle();
-            // Inverse zigzag
-            const int32_t delta = (encoded & 1u)
-                ? -static_cast<int32_t>((encoded + 1u) >> 1)
-                :  static_cast<int32_t>(encoded >> 1);
-            prev         = static_cast<uint16_t>(static_cast<int32_t>(prev) + delta);
-            out_pixels[i] = prev;
-        }
-    }
 }
 
 }  // namespace depth_cam_stream_codec::codec
