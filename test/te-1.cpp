@@ -40,7 +40,7 @@ int main(int argc, char** argv)
 
         std::uint64_t last_seq = 0;
         auto timer = node->create_wall_timer(
-            std::chrono::milliseconds(33),
+            std::chrono::milliseconds(1000 / rs_cfg.fps),
             [&]() {
                 auto snap = buffer->read_if_new(last_seq);
                 if (!snap) return;
