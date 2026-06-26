@@ -22,6 +22,8 @@ void H264ColorEncoder::open(const H264EncoderConfig& cfg)
     if (x264_param_default_preset(&param, cfg.preset.c_str(), cfg.tune.c_str()) < 0)
         throw std::runtime_error("x264_param_default_preset failed");
 
+    param.i_log_level = X264_LOG_NONE;
+
     param.i_csp            = X264_CSP_I420;
     param.i_width          = cfg.width;
     param.i_height         = cfg.height;
