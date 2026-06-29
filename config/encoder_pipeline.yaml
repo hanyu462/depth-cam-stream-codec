@@ -37,3 +37,4 @@ encoder_pipeline:
   depth:
     topic:    /camera/depth/image_compressed
     frame_id: camera_depth_optical_frame
+    fps:      30

@@ -46,10 +46,12 @@ encoder::EncoderPipelineConfig load_encoder_pipeline_config(const std::string& p
     if (const YAML::Node d = node["depth"]) {
         if (!d["topic"])    throw std::runtime_error("missing key: encoder_pipeline.depth.topic in "    + path);
         if (!d["frame_id"]) throw std::runtime_error("missing key: encoder_pipeline.depth.frame_id in " + path);
+        if (!d["fps"])      throw std::runtime_error("missing key: encoder_pipeline.depth.fps in "      + path);
 
         encoder::EncoderDepthConfig depth;
         depth.topic    = d["topic"].as<std::string>();
         depth.frame_id = d["frame_id"].as<std::string>();
+        depth.fps      = d["fps"].as<int>();
         cfg.depth      = depth;
     }
 

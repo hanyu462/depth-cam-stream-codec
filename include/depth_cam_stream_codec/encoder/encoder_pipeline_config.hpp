@@ -19,7 +19,7 @@ struct EncoderColorConfig {
 struct EncoderDepthConfig {
     std::string topic;
     std::string frame_id;
-    // RVL has no tunable parameters yet
+    int         fps;
 };
 
 struct EncoderPipelineConfig {
