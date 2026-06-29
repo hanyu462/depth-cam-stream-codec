@@ -77,7 +77,7 @@ add_library(depth_cam_stream_codec_ros2
     src/encoder/encoder_pipeline.cpp
     src/decoder/h264_color_decoder.cpp
     src/decoder/decoder_pipeline.cpp
-    src/depth_cam_receiver.cpp
+    src/depth_cam.cpp
 )
 
 target_include_directories(depth_cam_stream_codec_ros2 PUBLIC

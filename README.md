@@ -51,7 +51,7 @@ See [docs/configuration.md](docs/configuration.md) for all config options.
 
 ## Usage from External C++ Repository
 
-`DepthCamReceiver` wraps the full decoder pipeline behind a simple three-method API.
+`depth_cam.hpp` provides two facades — `DepthCamTrans` (publish) and `DepthCamReceiver` (subscribe).
 
 **`package.xml`**
 ```xml
@@ -66,15 +66,25 @@ target_link_libraries(your_target PRIVATE
 )
 ```
 
-**Code**
+**Tx side**
 ```cpp
-#include "depth_cam_stream_codec/depth_cam_receiver.hpp"
+#include "depth_cam_stream_codec/depth_cam.hpp"
 
-depth_cam_stream_codec::DepthCamReceiver rx("config/decoder_pipeline.yaml");
+DepthCamTrans tx("config/realsense_pipeline.yaml", "config/encoder_pipeline.yaml");
+tx.start();
+// camera capture + encode + publish runs in background threads
+tx.stop();
+```
+
+**Rx side**
+```cpp
+#include "depth_cam_stream_codec/depth_cam.hpp"
+
+DepthCamReceiver rx("config/decoder_pipeline.yaml");
 rx.start();
 
 while (rclcpp::ok()) {
-    auto frame = rx.next_frame(std::chrono::milliseconds(200));
+    auto frame = rx.next_frame();
     if (!frame) continue;
 
     cv::Mat color(frame->color.height, frame->color.width,
