@@ -103,7 +103,6 @@ void RealSensePipeline::run()
                     frame.stride_bytes = stride;
                     frame.sequence     = sequence;
                     frame.stamp_ns     = static_cast<std::int64_t>(vf.get_timestamp() * 1'000'000.0);
-                    frame.frame_id     = config_.color->frame_id;
                     frame.data.resize(size);
                     std::memcpy(frame.data.data(), vf.get_data(), size);
                     color_buffer_->write(std::move(frame));
@@ -130,7 +129,6 @@ void RealSensePipeline::run()
                     frame.stride_bytes = stride;
                     frame.sequence     = sequence;
                     frame.stamp_ns     = static_cast<std::int64_t>(df.get_timestamp() * 1'000'000.0);
-                    frame.frame_id     = config_.depth->frame_id;
                     frame.depth_scale  = depth_scale;
                     frame.data.resize(size);
                     std::memcpy(frame.data.data(), df.get_data(), size);

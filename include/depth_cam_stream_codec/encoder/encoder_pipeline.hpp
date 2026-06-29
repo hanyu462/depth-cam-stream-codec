@@ -10,6 +10,7 @@
 
 #include "depth_cam_stream_codec/camera/realsense_pipeline.hpp"
 #include "depth_cam_stream_codec/camera/realsense_pipeline_config.hpp"
+#include "depth_cam_stream_codec/encoder/encoder_pipeline_config.hpp"
 #include "depth_cam_stream_codec/encoder/h264_color_encoder.hpp"
 #include "depth_cam_stream_codec/encoder/rvl_depth_encoder.hpp"
 #include "depth_cam_stream_codec/common/frame_buffers.hpp"
@@ -27,7 +28,8 @@ namespace depth_cam_stream_codec::encoder {
 class EncoderPipeline {
 public:
     EncoderPipeline(
-        const camera::RealsensePipelineConfig& cfg,
+        const camera::RealsensePipelineConfig& rs_cfg,
+        const EncoderPipelineConfig&           enc_cfg,
         rclcpp::Node::SharedPtr                node);
 
     ~EncoderPipeline();
@@ -41,6 +43,8 @@ public:
 private:
     void color_loop();
     void depth_loop();
+
+    EncoderPipelineConfig enc_cfg_;
 
     // Buffers
     std::shared_ptr<camera::ColorFrameBuffer> color_buf_;

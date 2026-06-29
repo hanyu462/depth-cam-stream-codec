@@ -37,6 +37,7 @@ add_library(depth_cam_stream_codec_core
     src/camera/realsense_pipeline.cpp
     src/config/realsense_pipeline_yaml.cpp
     src/config/decoder_pipeline_yaml.cpp
+    src/config/encoder_pipeline_yaml.cpp
 )
 
 target_include_directories(depth_cam_stream_codec_core PUBLIC

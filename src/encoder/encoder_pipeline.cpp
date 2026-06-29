@@ -2,29 +2,42 @@
 
 #include <stdexcept>
 
+#include "depth_cam_stream_codec/encoder/encoder_config.hpp"
 #include "depth_cam_stream_codec/ros2/h264_color_frame_adapter.hpp"
 #include "depth_cam_stream_codec/ros2/rvl_depth_frame_adapter.hpp"
 
 namespace depth_cam_stream_codec::encoder {
 
 EncoderPipeline::EncoderPipeline(
-    const camera::RealsensePipelineConfig& cfg,
+    const camera::RealsensePipelineConfig& rs_cfg,
+    const EncoderPipelineConfig&           enc_cfg,
     rclcpp::Node::SharedPtr                node)
 {
-    if (!cfg.color)
+    if (!rs_cfg.color)
         throw std::runtime_error("EncoderPipeline: color config required");
-    if (!cfg.color->h264)
-        throw std::runtime_error("EncoderPipeline: color.h264 config required");
-    if (!cfg.depth)
+    if (!enc_cfg.color)
+        throw std::runtime_error("EncoderPipeline: encoder color config required");
+    if (!rs_cfg.depth)
         throw std::runtime_error("EncoderPipeline: depth config required");
 
+    enc_cfg_     = enc_cfg;
     color_buf_   = std::make_shared<camera::ColorFrameBuffer>();
     depth_buf_   = std::make_shared<camera::DepthFrameBuffer>();
-    rs_pipeline_ = std::make_shared<camera::RealSensePipeline>(cfg, color_buf_, depth_buf_);
-    h264_enc_.emplace(*cfg.color->h264);
+    rs_pipeline_ = std::make_shared<camera::RealSensePipeline>(rs_cfg, color_buf_, depth_buf_);
 
-    color_pub_ = node->create_publisher<depth_cam_stream_codec::msg::CompressedColorFrame>(cfg.color->topic, 10);
-    depth_pub_ = node->create_publisher<depth_cam_stream_codec::msg::CompressedDepthFrame>(cfg.depth->topic, 10);
+    codec::H264EncoderConfig h264_cfg;
+    h264_cfg.width             = rs_cfg.color->width;
+    h264_cfg.height            = rs_cfg.color->height;
+    h264_cfg.fps               = rs_cfg.color->fps;
+    h264_cfg.bitrate_kbps      = enc_cfg.color->bitrate_kbps;
+    h264_cfg.preset            = enc_cfg.color->preset;
+    h264_cfg.tune              = enc_cfg.color->tune;
+    h264_cfg.profile           = enc_cfg.color->profile;
+    h264_cfg.keyframe_interval = enc_cfg.color->keyframe_interval;
+    h264_enc_.emplace(h264_cfg);
+
+    color_pub_ = node->create_publisher<depth_cam_stream_codec::msg::CompressedColorFrame>(enc_cfg.color->topic, 10);
+    depth_pub_ = node->create_publisher<depth_cam_stream_codec::msg::CompressedDepthFrame>(enc_cfg.depth->topic, 10);
 }
 
 EncoderPipeline::~EncoderPipeline()
@@ -59,9 +72,10 @@ void EncoderPipeline::color_loop()
         if (!snap) continue;
 
         seq = snap->sequence;
-        if (auto compressed = h264_enc_->encode(*snap->value))
+        common::ColorFrame frame = *snap->value;
+        frame.frame_id = enc_cfg_.color->frame_id;
+        if (auto compressed = h264_enc_->encode(frame))
             color_pub_->publish(ros2::convert_h264_color_frame_to_ros(*compressed));
-
     }
 }
 
@@ -74,9 +88,9 @@ void EncoderPipeline::depth_loop()
         if (!snap) continue;
 
         seq = snap->sequence;
-        depth_pub_->publish(
-            ros2::convert_rvl_depth_frame_to_ros(rvl_enc_.encode(*snap->value)));
-
+        common::DepthFrame frame = *snap->value;
+        frame.frame_id = enc_cfg_.depth->frame_id;
+        depth_pub_->publish(ros2::convert_rvl_depth_frame_to_ros(rvl_enc_.encode(frame)));
     }
 }
 
