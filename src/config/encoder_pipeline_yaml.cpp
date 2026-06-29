@@ -22,17 +22,19 @@ encoder::EncoderPipelineConfig load_encoder_pipeline_config(const std::string& p
     encoder::EncoderPipelineConfig cfg;
 
     if (const YAML::Node c = node["color"]) {
-        if (!c["topic"])           throw std::runtime_error("missing key: encoder_pipeline.color.topic in "           + path);
-        if (!c["frame_id"])        throw std::runtime_error("missing key: encoder_pipeline.color.frame_id in "        + path);
-        if (!c["bitrate_kbps"])    throw std::runtime_error("missing key: encoder_pipeline.color.bitrate_kbps in "    + path);
-        if (!c["preset"])          throw std::runtime_error("missing key: encoder_pipeline.color.preset in "          + path);
-        if (!c["tune"])            throw std::runtime_error("missing key: encoder_pipeline.color.tune in "            + path);
-        if (!c["profile"])         throw std::runtime_error("missing key: encoder_pipeline.color.profile in "         + path);
+        if (!c["topic"])             throw std::runtime_error("missing key: encoder_pipeline.color.topic in "             + path);
+        if (!c["frame_id"])          throw std::runtime_error("missing key: encoder_pipeline.color.frame_id in "          + path);
+        if (!c["fps"])               throw std::runtime_error("missing key: encoder_pipeline.color.fps in "               + path);
+        if (!c["bitrate_kbps"])      throw std::runtime_error("missing key: encoder_pipeline.color.bitrate_kbps in "      + path);
+        if (!c["preset"])            throw std::runtime_error("missing key: encoder_pipeline.color.preset in "            + path);
+        if (!c["tune"])              throw std::runtime_error("missing key: encoder_pipeline.color.tune in "              + path);
+        if (!c["profile"])           throw std::runtime_error("missing key: encoder_pipeline.color.profile in "           + path);
         if (!c["keyframe_interval"]) throw std::runtime_error("missing key: encoder_pipeline.color.keyframe_interval in " + path);
 
         encoder::EncoderColorConfig color;
         color.topic             = c["topic"].as<std::string>();
         color.frame_id          = c["frame_id"].as<std::string>();
+        color.fps               = c["fps"].as<int>();
         color.bitrate_kbps      = c["bitrate_kbps"].as<int>();
         color.preset            = c["preset"].as<std::string>();
         color.tune              = c["tune"].as<std::string>();

@@ -8,6 +8,7 @@ namespace depth_cam_stream_codec::encoder {
 struct EncoderColorConfig {
     std::string topic;
     std::string frame_id;
+    int         fps;
     int         bitrate_kbps;
     std::string preset;
     std::string tune;

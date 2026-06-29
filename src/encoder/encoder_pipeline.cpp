@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 
-#include "depth_cam_stream_codec/encoder/encoder_config.hpp"
+#include "depth_cam_stream_codec/encoder/encoder_config.hpp"  // H264EncoderConfig
 #include "depth_cam_stream_codec/ros2/h264_color_frame_adapter.hpp"
 #include "depth_cam_stream_codec/ros2/rvl_depth_frame_adapter.hpp"
 
@@ -24,17 +24,6 @@ EncoderPipeline::EncoderPipeline(
     color_buf_   = std::make_shared<camera::ColorFrameBuffer>();
     depth_buf_   = std::make_shared<camera::DepthFrameBuffer>();
     rs_pipeline_ = std::make_shared<camera::RealSensePipeline>(rs_cfg, color_buf_, depth_buf_);
-
-    codec::H264EncoderConfig h264_cfg;
-    h264_cfg.width             = rs_cfg.color->width;
-    h264_cfg.height            = rs_cfg.color->height;
-    h264_cfg.fps               = rs_cfg.color->fps;
-    h264_cfg.bitrate_kbps      = enc_cfg.color->bitrate_kbps;
-    h264_cfg.preset            = enc_cfg.color->preset;
-    h264_cfg.tune              = enc_cfg.color->tune;
-    h264_cfg.profile           = enc_cfg.color->profile;
-    h264_cfg.keyframe_interval = enc_cfg.color->keyframe_interval;
-    h264_enc_.emplace(h264_cfg);
 
     color_pub_ = node->create_publisher<depth_cam_stream_codec::msg::CompressedColorFrame>(enc_cfg.color->topic, 10);
     depth_pub_ = node->create_publisher<depth_cam_stream_codec::msg::CompressedDepthFrame>(enc_cfg.depth->topic, 10);
@@ -72,6 +61,20 @@ void EncoderPipeline::color_loop()
         if (!snap) continue;
 
         seq = snap->sequence;
+
+        if (!h264_enc_) {
+            codec::H264EncoderConfig h264_cfg;
+            h264_cfg.width             = snap->value->width;
+            h264_cfg.height            = snap->value->height;
+            h264_cfg.fps               = enc_cfg_.color->fps;
+            h264_cfg.bitrate_kbps      = enc_cfg_.color->bitrate_kbps;
+            h264_cfg.preset            = enc_cfg_.color->preset;
+            h264_cfg.tune              = enc_cfg_.color->tune;
+            h264_cfg.profile           = enc_cfg_.color->profile;
+            h264_cfg.keyframe_interval = enc_cfg_.color->keyframe_interval;
+            h264_enc_.emplace(h264_cfg);
+        }
+
         common::ColorFrame frame = *snap->value;
         frame.frame_id = enc_cfg_.color->frame_id;
         if (auto compressed = h264_enc_->encode(frame))

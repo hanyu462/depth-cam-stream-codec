@@ -2,6 +2,7 @@ encoder_pipeline:
   color:
     topic:    /camera/color/image_compressed
     frame_id: camera_color_optical_frame
+    fps:      30
 
     # Target bitrate in kbps (ABR mode).
     # Recommended range for 1280x720 @ 30fps: 1500 ~ 4000
