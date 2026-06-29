@@ -10,6 +10,7 @@ convert_rvl_depth_frame_to_ros(const codec::RVLDepthFrame& frame)
     msg.header.stamp.sec     = static_cast<int32_t>(frame.stamp_ns / 1'000'000'000LL);
     msg.header.stamp.nanosec = static_cast<uint32_t>(frame.stamp_ns % 1'000'000'000LL);
     msg.header.frame_id      = frame.frame_id;
+    msg.sequence             = frame.sequence;
     msg.width                = static_cast<uint32_t>(frame.width);
     msg.height               = static_cast<uint32_t>(frame.height);
     msg.format               = "rvl";
@@ -27,6 +28,7 @@ convert_ros_to_rvl_depth_frame(const depth_cam_stream_codec::msg::CompressedDept
     frame.stamp_ns    = static_cast<int64_t>(msg.header.stamp.sec) * 1'000'000'000LL
                       + static_cast<int64_t>(msg.header.stamp.nanosec);
     frame.frame_id    = msg.header.frame_id;
+    frame.sequence    = msg.sequence;
     frame.width       = static_cast<int>(msg.width);
     frame.height      = static_cast<int>(msg.height);
     frame.depth_scale = msg.depth_scale;

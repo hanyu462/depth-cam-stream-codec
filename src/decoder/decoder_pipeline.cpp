@@ -9,16 +9,15 @@ DecoderPipeline::DecoderPipeline(
     const DecoderPipelineConfig& cfg,
     rclcpp::Node::SharedPtr      node)
 {
-    color_in_  = std::make_shared<common::LatestBuffer<codec::H264ColorFrame>>();
-    depth_in_  = std::make_shared<common::LatestBuffer<codec::RVLDepthFrame>>();
-    color_out_ = std::make_shared<common::LatestBuffer<common::ColorFrame>>();
-    depth_out_ = std::make_shared<common::LatestBuffer<common::DepthFrame>>();
+    color_in_    = std::make_shared<common::LatestBuffer<codec::H264ColorFrame>>();
+    depth_in_    = std::make_shared<common::LatestBuffer<codec::RVLDepthFrame>>();
+    aligned_out_ = std::make_shared<common::LatestBuffer<common::AlignedFrame>>();
 
     if (cfg.color) {
         h264_dec_.emplace();
-        color_sub_ = node->create_subscription<sensor_msgs::msg::CompressedImage>(
+        color_sub_ = node->create_subscription<depth_cam_stream_codec::msg::CompressedColorFrame>(
             cfg.color->topic, 10,
-            [this](sensor_msgs::msg::CompressedImage::ConstSharedPtr msg) {
+            [this](depth_cam_stream_codec::msg::CompressedColorFrame::ConstSharedPtr msg) {
                 color_in_->write(ros2::convert_ros_to_h264_color_frame(*msg));
             });
     }
@@ -54,6 +53,28 @@ void DecoderPipeline::stop()
     if (t_depth_.joinable()) t_depth_.join();
 }
 
+void DecoderPipeline::try_pair()
+{
+    if (!pending_color_ || !pending_depth_) return;
+
+    if (pending_color_->sequence == pending_depth_->sequence) {
+        common::AlignedFrame aligned;
+        aligned.stamp_ns = pending_color_->stamp_ns;
+        aligned.color    = std::move(*pending_color_);
+        aligned.depth    = std::move(*pending_depth_);
+        aligned_out_->write(std::move(aligned));
+        pending_color_.reset();
+        pending_depth_.reset();
+        return;
+    }
+
+    // Sequences differ — drop the frame with the lower sequence number
+    if (pending_color_->sequence < pending_depth_->sequence)
+        pending_color_.reset();
+    else
+        pending_depth_.reset();
+}
+
 void DecoderPipeline::color_loop()
 {
     std::uint64_t seq = 0;
@@ -63,8 +84,11 @@ void DecoderPipeline::color_loop()
         if (!snap) continue;
 
         seq = snap->sequence;
-        if (auto decoded = h264_dec_->decode(*snap->value))
-            color_out_->write(std::move(*decoded));
+        if (auto decoded = h264_dec_->decode(*snap->value)) {
+            std::lock_guard<std::mutex> lock(sync_mutex_);
+            pending_color_ = std::move(*decoded);
+            try_pair();
+        }
     }
 }
 
@@ -77,7 +101,11 @@ void DecoderPipeline::depth_loop()
         if (!snap) continue;
 
         seq = snap->sequence;
-        depth_out_->write(rvl_dec_.decode(*snap->value));
+        {
+            std::lock_guard<std::mutex> lock(sync_mutex_);
+            pending_depth_ = rvl_dec_.decode(*snap->value);
+            try_pair();
+        }
     }
 }
 

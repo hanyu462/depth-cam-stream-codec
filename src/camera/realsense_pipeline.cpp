@@ -83,6 +83,7 @@ void RealSensePipeline::run()
         rs2::frameset frames;
         if (!pipe.try_wait_for_frames(&frames, 100)) continue;
 
+        const uint64_t sequence = frameset_sequence_.fetch_add(1);
         rs2::frameset processed = align_filter ? align_filter->process(frames) : frames;
 
         if (color_buffer_ && config_.color) {
@@ -100,6 +101,7 @@ void RealSensePipeline::run()
                     frame.width        = w;
                     frame.height       = h;
                     frame.stride_bytes = stride;
+                    frame.sequence     = sequence;
                     frame.stamp_ns     = static_cast<std::int64_t>(vf.get_timestamp() * 1'000'000.0);
                     frame.frame_id     = config_.color->frame_id;
                     frame.data.resize(size);
@@ -126,6 +128,7 @@ void RealSensePipeline::run()
                     frame.width        = w;
                     frame.height       = h;
                     frame.stride_bytes = stride;
+                    frame.sequence     = sequence;
                     frame.stamp_ns     = static_cast<std::int64_t>(df.get_timestamp() * 1'000'000.0);
                     frame.frame_id     = config_.depth->frame_id;
                     frame.depth_scale  = depth_scale;

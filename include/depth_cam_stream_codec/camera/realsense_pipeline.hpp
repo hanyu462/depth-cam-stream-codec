@@ -26,6 +26,7 @@ private:
     std::shared_ptr<ColorFrameBuffer> color_buffer_;
     std::shared_ptr<DepthFrameBuffer> depth_buffer_;
     std::atomic<bool>                 running_{false};
+    std::atomic<uint64_t>             frameset_sequence_{0};
     std::thread                       worker_;
 };
 

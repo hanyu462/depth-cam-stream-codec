@@ -23,7 +23,7 @@ EncoderPipeline::EncoderPipeline(
     rs_pipeline_ = std::make_shared<camera::RealSensePipeline>(cfg, color_buf_, depth_buf_);
     h264_enc_.emplace(*cfg.color->h264);
 
-    color_pub_ = node->create_publisher<sensor_msgs::msg::CompressedImage>(cfg.color->topic, 10);
+    color_pub_ = node->create_publisher<depth_cam_stream_codec::msg::CompressedColorFrame>(cfg.color->topic, 10);
     depth_pub_ = node->create_publisher<depth_cam_stream_codec::msg::CompressedDepthFrame>(cfg.depth->topic, 10);
 }
 

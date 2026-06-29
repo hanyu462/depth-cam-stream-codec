@@ -2,6 +2,6 @@ std_msgs/Header header
 uint64  sequence
 uint32  width
 uint32  height
+bool    is_keyframe
 string  format
-float32 depth_scale
 uint8[] data
