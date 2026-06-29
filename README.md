@@ -49,3 +49,44 @@ See [docs/configuration.md](docs/configuration.md) for all config options.
 
 ---
 
+## Usage from External C++ Repository
+
+`DepthCamReceiver` wraps the full decoder pipeline behind a simple three-method API.
+
+**`package.xml`**
+```xml
+<depend>depth_cam_stream_codec</depend>
+```
+
+**`CMakeLists.txt`**
+```cmake
+find_package(depth_cam_stream_codec REQUIRED)
+target_link_libraries(your_target PRIVATE
+    depth_cam_stream_codec::depth_cam_stream_codec_ros2
+)
+```
+
+**Code**
+```cpp
+#include "depth_cam_stream_codec/depth_cam_receiver.hpp"
+
+depth_cam_stream_codec::DepthCamReceiver rx("config/decoder_pipeline.yaml");
+rx.start();
+
+while (rclcpp::ok()) {
+    auto frame = rx.next_frame(std::chrono::milliseconds(200));
+    if (!frame) continue;
+
+    cv::Mat color(frame->color.height, frame->color.width,
+                  CV_8UC3, frame->color.data.data());
+    cv::Mat depth(frame->depth.height, frame->depth.width,
+                  CV_16UC1, frame->depth.data.data());
+}
+
+rx.stop();
+```
+
+See [docs/usage.md](docs/usage.md) for the full API reference and notes.
+
+---
+
