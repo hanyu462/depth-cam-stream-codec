@@ -13,18 +13,18 @@ namespace depth_cam_stream_codec {
 // Hides camera capture, encoding, and ROS2 publishing behind start/stop.
 //
 // Example:
-//   DepthCamTrans tx("config/realsense_pipeline.yaml",
-//                    "config/encoder_pipeline.yaml");
+//   DepthCamTransmitter tx("config/realsense_pipeline.yaml",
+//                          "config/encoder_pipeline.yaml");
 //   tx.start();
 //   // ... rest of your node (IMU, control loop, etc.)
 //   tx.stop();
-class DepthCamTrans {
+class DepthCamTransmitter {
 public:
-    DepthCamTrans(std::string rs_config_path, std::string enc_config_path);
-    ~DepthCamTrans();
+    DepthCamTransmitter(std::string rs_config_path, std::string enc_config_path);
+    ~DepthCamTransmitter();
 
-    DepthCamTrans(const DepthCamTrans&)            = delete;
-    DepthCamTrans& operator=(const DepthCamTrans&) = delete;
+    DepthCamTransmitter(const DepthCamTransmitter&)            = delete;
+    DepthCamTransmitter& operator=(const DepthCamTransmitter&) = delete;
 
     // Load configs, create node and pipeline, start camera capture + encoding.
     // Calls rclcpp::init(0, nullptr) internally if rclcpp is not yet initialized.

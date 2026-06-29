@@ -1,11 +1,10 @@
-#include "depth_cam_stream_codec/depth_cam.hpp"
+#include "depth_cam_stream_codec/depth_cam_stream_codec.hpp"
 
 #include <thread>
 
 #include <rclcpp/executors/single_threaded_executor.hpp>
 #include <rclcpp/rclcpp.hpp>
 
-#include "depth_cam_stream_codec/camera/realsense_pipeline_config.hpp"
 #include "depth_cam_stream_codec/config/decoder_pipeline_yaml.hpp"
 #include "depth_cam_stream_codec/config/encoder_pipeline_yaml.hpp"
 #include "depth_cam_stream_codec/config/realsense_pipeline_yaml.hpp"
@@ -14,31 +13,31 @@
 
 namespace depth_cam_stream_codec {
 
-// ─── DepthCamTrans ───────────────────────────────────────────────────────────
+// ─── DepthCamTransmitter ─────────────────────────────────────────────────────
 
-struct DepthCamTrans::Impl {
+struct DepthCamTransmitter::Impl {
     std::string rs_config_path;
     std::string enc_config_path;
 
-    std::shared_ptr<rclcpp::Node>              node;
-    std::shared_ptr<encoder::EncoderPipeline>  pipeline;
-    rclcpp::executors::SingleThreadedExecutor  executor;
-    std::thread                                spin_thread;
+    std::shared_ptr<rclcpp::Node>             node;
+    std::shared_ptr<encoder::EncoderPipeline> pipeline;
+    rclcpp::executors::SingleThreadedExecutor executor;
+    std::thread                               spin_thread;
 };
 
-DepthCamTrans::DepthCamTrans(std::string rs_config_path, std::string enc_config_path)
+DepthCamTransmitter::DepthCamTransmitter(std::string rs_config_path, std::string enc_config_path)
     : impl_(std::make_unique<Impl>())
 {
     impl_->rs_config_path  = std::move(rs_config_path);
     impl_->enc_config_path = std::move(enc_config_path);
 }
 
-DepthCamTrans::~DepthCamTrans()
+DepthCamTransmitter::~DepthCamTransmitter()
 {
     stop();
 }
 
-void DepthCamTrans::start()
+void DepthCamTransmitter::start()
 {
     if (impl_->spin_thread.joinable()) return;
 
@@ -48,7 +47,7 @@ void DepthCamTrans::start()
     const auto rs_cfg  = config::load_realsense_pipeline_config(impl_->rs_config_path);
     const auto enc_cfg = config::load_encoder_pipeline_config(impl_->enc_config_path);
 
-    impl_->node     = rclcpp::Node::make_shared("depth_cam_trans");
+    impl_->node     = rclcpp::Node::make_shared("depth_cam_transmitter");
     impl_->pipeline = std::make_shared<encoder::EncoderPipeline>(rs_cfg, enc_cfg, impl_->node);
 
     impl_->executor.add_node(impl_->node);
@@ -57,7 +56,7 @@ void DepthCamTrans::start()
     impl_->spin_thread = std::thread([this] { impl_->executor.spin(); });
 }
 
-void DepthCamTrans::stop()
+void DepthCamTransmitter::stop()
 {
     if (!impl_->spin_thread.joinable()) return;
 

@@ -51,7 +51,7 @@ See [docs/configuration.md](docs/configuration.md) for all config options.
 
 ## Usage from External C++ Repository
 
-`depth_cam.hpp` provides two facades — `DepthCamTrans` (publish) and `DepthCamReceiver` (subscribe).
+`depth_cam_stream_codec.hpp` provides two facades — `DepthCamTransmitter` (publish) and `DepthCamReceiver` (subscribe).
 
 **`package.xml`**
 ```xml
@@ -68,9 +68,9 @@ target_link_libraries(your_target PRIVATE
 
 **Tx side**
 ```cpp
-#include "depth_cam_stream_codec/depth_cam.hpp"
+#include "depth_cam_stream_codec/depth_cam_stream_codec.hpp"
 
-DepthCamTrans tx("config/realsense_pipeline.yaml", "config/encoder_pipeline.yaml");
+DepthCamTransmitter tx("config/realsense_pipeline.yaml", "config/encoder_pipeline.yaml");
 tx.start();
 // camera capture + encode + publish runs in background threads
 tx.stop();
@@ -78,7 +78,7 @@ tx.stop();
 
 **Rx side**
 ```cpp
-#include "depth_cam_stream_codec/depth_cam.hpp"
+#include "depth_cam_stream_codec/depth_cam_stream_codec.hpp"
 
 DepthCamReceiver rx("config/decoder_pipeline.yaml");
 rx.start();

@@ -1,10 +1,10 @@
-# Using depth_cam.hpp from an External C++ Repository
+# Using depth_cam_stream_codec.hpp from an External C++ Repository
 
-`depth_cam.hpp` provides two facades in a single header:
+`depth_cam_stream_codec.hpp` provides two facades in a single header:
 
 | Class | Role |
 |-------|------|
-| `DepthCamTrans` | Capture RealSense → encode → publish over ROS2 |
+| `DepthCamTransmitter` | Capture RealSense → encode → publish over ROS2 |
 | `DepthCamReceiver` | Subscribe ROS2 topics → decode → `AlignedFrame` |
 
 ---
@@ -28,13 +28,13 @@ target_link_libraries(your_target PRIVATE
 
 ---
 
-## DepthCamTrans
+## DepthCamTransmitter
 
 ```cpp
-#include "depth_cam_stream_codec/depth_cam.hpp"
+#include "depth_cam_stream_codec/depth_cam_stream_codec.hpp"
 using namespace depth_cam_stream_codec;
 
-DepthCamTrans tx("config/realsense_pipeline.yaml", "config/encoder_pipeline.yaml");
+DepthCamTransmitter tx("config/realsense_pipeline.yaml", "config/encoder_pipeline.yaml");
 tx.start();
 
 // Camera capture + encoding + publishing all run in background threads.
@@ -45,7 +45,7 @@ tx.stop();
 
 | Method | Description |
 |--------|-------------|
-| `DepthCamTrans(rs_config, enc_config)` | Load both config YAMLs |
+| `DepthCamTransmitter(rs_config, enc_config)` | Load both config YAMLs |
 | `start()` | Open camera, start encode/publish threads |
 | `stop()` | Stop all threads and release camera. Idempotent |
 
@@ -54,7 +54,7 @@ tx.stop();
 ## DepthCamReceiver
 
 ```cpp
-#include "depth_cam_stream_codec/depth_cam.hpp"
+#include "depth_cam_stream_codec/depth_cam_stream_codec.hpp"
 using namespace depth_cam_stream_codec;
 
 DepthCamReceiver rx("config/decoder_pipeline.yaml");
