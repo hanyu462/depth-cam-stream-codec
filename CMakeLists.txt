@@ -37,6 +37,7 @@ add_library(depth_cam_stream_codec_core
     src/camera/realsense_pipeline.cpp
     src/config/realsense_pipeline_yaml.cpp
     src/config/decoder_pipeline_yaml.cpp
+    src/config/encoder_pipeline_yaml.cpp
 )
 
 target_include_directories(depth_cam_stream_codec_core PUBLIC
@@ -102,6 +103,17 @@ target_link_libraries(depth_cam_stream_codec_ros2 PUBLIC
     "${cpp_typesupport_target}"
 )
 
+# ── nodes ────────────────────────────────────────────────────────────────────
+add_executable(encoder_node src/ros2/encoder_node.cpp)
+target_link_libraries(encoder_node PRIVATE depth_cam_stream_codec_ros2)
+
+add_executable(decoder_node src/ros2/decoder_node.cpp)
+target_link_libraries(decoder_node PRIVATE depth_cam_stream_codec_ros2)
+
+install(TARGETS encoder_node decoder_node
+    DESTINATION lib/${PROJECT_NAME}
+)
+
 # ── tests ────────────────────────────────────────────────────────────────────
 add_executable(te-3 test/te-3.cpp)
 target_link_libraries(te-3 PRIVATE depth_cam_stream_codec_ros2)
@@ -112,7 +124,10 @@ target_link_libraries(te-4 PRIVATE depth_cam_stream_codec_ros2)
 add_executable(te-5 test/te-5.cpp)
 target_link_libraries(te-5 PRIVATE depth_cam_stream_codec_ros2)
 
-install(TARGETS te-3 te-4 te-5
+add_executable(te-6 test/te-6.cpp)
+target_link_libraries(te-6 PRIVATE depth_cam_stream_codec_ros2)
+
+install(TARGETS te-3 te-4 te-5 te-6
     DESTINATION lib/${PROJECT_NAME}
 )
 

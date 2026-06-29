@@ -1,0 +1,40 @@
+encoder_pipeline:
+  color:
+    topic:    /camera/color/image_compressed
+    frame_id: camera_color_optical_frame
+    fps:      30
+
+    # Target bitrate in kbps (ABR mode).
+    # Recommended range for 1280x720 @ 30fps: 1500 ~ 4000
+    bitrate_kbps: 2000
+
+    # Encoding speed vs. compression trade-off.
+    # Fastest → slowest (higher compression):
+    #   ultrafast | superfast | veryfast | faster | fast | medium | slow | slower | veryslow | placebo
+    # For real-time streaming: ultrafast or superfast recommended.
+    preset: ultrafast
+
+    # Content/use-case tuning (applied on top of preset):
+    #   zerolatency — real-time streaming (removes B-frames and encoder delay)
+    #   film        — live-action video, prioritizes visual quality
+    #   animation   — flat colors and sharp edges (cartoons, synthetic scenes)
+    #   grain       — preserves film grain in high-ISO footage
+    #   stillimage  — mostly static scenes
+    #   fastdecode  — optimizes for decoder CPU usage
+    tune: zerolatency
+
+    # H.264 profile (compatibility vs. features):
+    #   baseline — widest compatibility, no B-frames (standard for streaming)
+    #   main     — adds B-frames over baseline
+    #   high     — adds CABAC and more compression tools (better quality, higher decode cost)
+    profile: baseline
+
+    # IDR (keyframe) insertion interval in frames.
+    # Setting equal to fps inserts one IDR per second.
+    # Lower values improve seek/recovery speed at the cost of larger output.
+    keyframe_interval: 30
+
+  depth:
+    topic:    /camera/depth/image_compressed
+    frame_id: camera_depth_optical_frame
+    fps:      30

@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "depth_cam_stream_codec/decoder/decoder_config.hpp"
+#include "depth_cam_stream_codec/decoder/decoder_pipeline_config.hpp"
 
 namespace depth_cam_stream_codec::config {
 

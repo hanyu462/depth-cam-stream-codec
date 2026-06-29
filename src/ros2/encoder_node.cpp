@@ -1,12 +1,3 @@
-// [TE-4] Compressed RealSense stream publisher
-//
-// Usage:
-//   ./te-4 [config/realsense_pipeline.yaml] [config/encoder_pipeline.yaml]
-//
-// Topics:
-//   /camera/color/image_compressed  (sensor_msgs/CompressedImage, format=h264)
-//   /camera/depth/image_compressed  (depth_cam_stream_codec/CompressedDepthFrame, format=rvl)
-
 #include <exception>
 #include <memory>
 
@@ -25,10 +16,11 @@ int main(int argc, char** argv)
     try {
         const std::string rs_path  = (argc > 1) ? argv[1] : "config/realsense_pipeline.yaml";
         const std::string enc_path = (argc > 2) ? argv[2] : "config/encoder_pipeline.yaml";
+
         const auto rs_cfg  = config::load_realsense_pipeline_config(rs_path);
         const auto enc_cfg = config::load_encoder_pipeline_config(enc_path);
 
-        auto node     = rclcpp::Node::make_shared("te_4");
+        auto node     = rclcpp::Node::make_shared("encoder_node");
         auto pipeline = std::make_shared<encoder::EncoderPipeline>(rs_cfg, enc_cfg, node);
 
         pipeline->start();
@@ -36,7 +28,7 @@ int main(int argc, char** argv)
         pipeline->stop();
 
     } catch (const std::exception& e) {
-        RCLCPP_FATAL(rclcpp::get_logger("te_4"), "Fatal: %s", e.what());
+        RCLCPP_FATAL(rclcpp::get_logger("encoder_node"), "Fatal: %s", e.what());
         rclcpp::shutdown();
         return 1;
     }

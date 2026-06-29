@@ -14,7 +14,7 @@
 #include "depth_cam_stream_codec/common/h264_color_frame.hpp"
 #include "depth_cam_stream_codec/common/latest_buffer.hpp"
 #include "depth_cam_stream_codec/common/rvl_depth_frame.hpp"
-#include "depth_cam_stream_codec/decoder/decoder_config.hpp"
+#include "depth_cam_stream_codec/decoder/decoder_pipeline_config.hpp"
 #include "depth_cam_stream_codec/decoder/h264_color_decoder.hpp"
 #include "depth_cam_stream_codec/decoder/rvl_depth_decoder.hpp"
 #include "depth_cam_stream_codec/msg/compressed_color_frame.hpp"
